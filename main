@@ -51,7 +51,7 @@ class Ui_MainWindow(object):
 "border-radius: 5px;")
         self.label_4 = QLabel(self.centralwidget)
         self.label_4.setObjectName(u"label_4")
-        self.label_4.setGeometry(QRect(130, 95, 411, 21))
+        self.label_4.setGeometry(QRect(110, 95, 431, 21))
         #设置label_4的背景色为灰色
         self.label_4.setStyleSheet(u"background-color: rgb(230, 230, 230);")
         self.pushButton_3 = QPushButton(self.centralwidget)
@@ -84,7 +84,7 @@ class Ui_MainWindow(object):
         self.label.setText(QCoreApplication.translate("MainWindow", u"B\u7ad9\u89c6\u9891\u4e0b\u8f7d", None))
         self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u89c6\u9891\u94fe\u63a5\uff1a", None))
         self.pushButton.setText(QCoreApplication.translate("MainWindow", u"\u5f00\u59cb\u4e0b\u8f7d", None))
-        self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9\u4fdd\u5b58\u8def\u5f84\uff1a", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u4fdd\u5b58\u8def\u5f84\uff1a", None))
         self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9", None))
         self.label_4.setText("")
         self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"\u6253\u5f00\u76ee\u5f55", None))
