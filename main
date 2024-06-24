@@ -1,0 +1,210 @@
+import os
+import re
+from PySide6 import QtWidgets
+from PySide6.QtCore import (QCoreApplication, QMetaObject, QRect, QThread, Signal)
+from PySide6.QtGui import (
+    QFont, )
+from PySide6.QtWidgets import (QLabel, QLineEdit,QPushButton,  QTextEdit, QWidget, QFileDialog, QMessageBox)
+
+class Ui_MainWindow(object):
+    def setupUi(self, MainWindow):
+        if not MainWindow.objectName():
+            MainWindow.setObjectName(u"MainWindow")
+
+        #设置窗口固定
+        MainWindow.setFixedSize(733, 355)
+        MainWindow.setStyleSheet(u"background-color: rgb(255, 255, 255);")
+        self.centralwidget = QWidget(MainWindow)
+        self.centralwidget.setObjectName(u"centralwidget")
+        self.label = QLabel(self.centralwidget)
+        self.label.setObjectName(u"label")
+        self.label.setGeometry(QRect(290, 40, 121, 31))
+        font = QFont()
+        font.setPointSize(15)
+        font.setBold(True)
+        self.label.setFont(font)
+        self.label_2 = QLabel(self.centralwidget)
+        self.label_2.setObjectName(u"label_2")
+        self.label_2.setGeometry(QRect(40, 180, 61, 31))
+        font1 = QFont()
+        font1.setPointSize(10)
+        font1.setBold(True)
+        self.label_2.setFont(font1)
+        self.lineEdit = QLineEdit(self.centralwidget)
+        self.lineEdit.setObjectName(u"lineEdit")
+        self.lineEdit.setGeometry(QRect(110, 180, 431, 31))
+        self.pushButton = QPushButton(self.centralwidget)
+        self.pushButton.setObjectName(u"pushButton")
+        self.pushButton.setGeometry(QRect(560, 180, 61, 31))
+        self.pushButton.setStyleSheet(u"background-color: rgb(0, 0, 0);\n"
+"color: rgb(255, 255, 255);\n"
+"border-radius: 5px;")
+        self.label_3 = QLabel(self.centralwidget)
+        self.label_3.setObjectName(u"label_3")
+        self.label_3.setGeometry(QRect(40, 90, 91, 31))
+        self.label_3.setFont(font1)
+        self.pushButton_2 = QPushButton(self.centralwidget)
+        self.pushButton_2.setObjectName(u"pushButton_2")
+        self.pushButton_2.setGeometry(QRect(560, 90, 61, 31))
+        self.pushButton_2.setStyleSheet(u"background-color: rgb(0, 0, 0);\n"
+"color: rgb(255, 255, 255);\n"
+"border-radius: 5px;")
+        self.label_4 = QLabel(self.centralwidget)
+        self.label_4.setObjectName(u"label_4")
+        self.label_4.setGeometry(QRect(130, 95, 411, 21))
+        #设置label_4的背景色为灰色
+        self.label_4.setStyleSheet(u"background-color: rgb(230, 230, 230);")
+        self.pushButton_3 = QPushButton(self.centralwidget)
+        self.pushButton_3.setObjectName(u"pushButton_3")
+        self.pushButton_3.setGeometry(QRect(640, 180, 61, 31))
+        self.pushButton_3.setStyleSheet(u"background-color: rgb(0, 0, 0);\n"
+"color: rgb(255, 255, 255);\n"
+"border-radius: 5px;")
+        self.textEdit = QTextEdit(self.centralwidget)
+        self.textEdit.setObjectName(u"textEdit")
+        self.textEdit.setGeometry(QRect(110, 220, 431, 111))
+        #设置textEdit的不可修改
+        self.textEdit.setReadOnly(True)
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        #--------
+        self.pushButton_2.clicked.connect(self.save_path)
+        self.pushButton.clicked.connect(self.thread_download)
+        self.pushButton_3.clicked.connect(self.open_file)
+
+        MainWindow.setCentralWidget(self.centralwidget)
+
+        self.retranslateUi(MainWindow)
+
+        QMetaObject.connectSlotsByName(MainWindow)
+    # setupUi
+
+    def retranslateUi(self, MainWindow):
+        MainWindow.setWindowTitle(QCoreApplication.translate("MainWindow", u"MainWindow", None))
+        self.label.setText(QCoreApplication.translate("MainWindow", u"B\u7ad9\u89c6\u9891\u4e0b\u8f7d", None))
+        self.label_2.setText(QCoreApplication.translate("MainWindow", u"\u89c6\u9891\u94fe\u63a5\uff1a", None))
+        self.pushButton.setText(QCoreApplication.translate("MainWindow", u"\u5f00\u59cb\u4e0b\u8f7d", None))
+        self.label_3.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9\u4fdd\u5b58\u8def\u5f84\uff1a", None))
+        self.pushButton_2.setText(QCoreApplication.translate("MainWindow", u"\u9009\u62e9", None))
+        self.label_4.setText("")
+        self.pushButton_3.setText(QCoreApplication.translate("MainWindow", u"\u6253\u5f00\u76ee\u5f55", None))
+    # retranslateUi
+
+    def save_path(self):
+
+        path = QFileDialog.getExistingDirectory(None, "选取文件夹", "./")
+        self.label_4.setText(path)
+
+    def thread_download(self):
+        #判断lineEdit是否可编辑
+        if self.lineEdit.isReadOnly():
+            box = QMessageBox()
+            box.setWindowTitle("提示")
+            box.setText("正在下载中，请勿重复点击！")
+            box.setIcon(QMessageBox.Warning)
+            box.setStandardButtons(QMessageBox.Ok)
+            box.exec()
+        else:
+            # 设置lineEdit不可编辑
+            self.lineEdit.setReadOnly(True)
+            try:
+                # 创建线程
+                self.thread = thread_down()
+                # 连接信号槽
+                self.thread.finished.connect(self.download)
+                # 开启线程
+                self.thread.start()
+            except:
+                self.download()
+
+    def download(self):
+        url = self.lineEdit.text()
+        path = self.label_4.text()
+        print('链接和路径：',url,path)
+
+        if url == "" or path == "":
+            box=QMessageBox()
+            box.setWindowTitle("提示")
+            box.setText("请输入视频链接或选择保存路径！")
+            box.setIcon(QMessageBox.Warning)
+            box.setStandardButtons(QMessageBox.Ok)
+            box.exec()
+
+        else:
+            self.textEdit.append(f"正在下载{url}，请稍等...")
+            if 'https://www.bilibili.com/' in url:
+                try:
+                    os.chdir(os.path.join(base_path, 'BBDown'))
+                    new_url = 'https://www.bilibili.com/video' + re.search(r'/BV\w{10}/', url.split('?')[0]).group(0)
+                    print(new_url)
+                except:
+                    new_url = url
+                try:
+                    print('BBDown --work-dir %s %s' % (path, new_url))
+                    os.system('BBDown --work-dir %s %s' % (path, new_url))
+                    # 构造命令
+                    # command = f"BBDown --work-dir {path} {new_url}"
+                    # 使用subprocess来启动命令，并隐藏控制台窗口
+                    # subprocess.Popen(command, shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
+                    # 等待完成
+                    self.textEdit.append('下载完成！\n\n')
+                    self.lineEdit.clear()
+                except:
+                    os.system('BBDown login')
+                    box = QMessageBox()
+                    box.setWindowTitle("提示")
+                    box.setText("请先登录B站账号！在进行下一步操作！")
+                    box.setIcon(QMessageBox.Warning)
+                    box.setStandardButtons(QMessageBox.Ok)
+                    box.exec()
+                    # 等待完成
+                    self.textEdit.append('开始下载！')
+                    os.system('BBDown --work-dir %s %s' % (path, new_url))
+                    # 构造命令
+                    # command = f"BBDown --work-dir {path} {new_url}"
+                    # 使用subprocess来启动命令，并隐藏控制台窗口
+                    # subprocess.Popen(command, shell=True, creationflags=subprocess.CREATE_NO_WINDOW)
+                    self.textEdit.append('下载完成！\n\n')
+                    self.lineEdit.clear()
+
+
+            else:
+                box=QMessageBox()
+                box.setWindowTitle("提示")
+                box.setText("请输入正确的视频链接！")
+                box.setIcon(QMessageBox.Warning)
+                box.setStandardButtons(QMessageBox.Ok)
+                box.exec()
+
+        # 设置lineEdit可编辑
+        self.lineEdit.setReadOnly(False)
+    def open_file(self):
+        if self.label_4.text() == "":
+            box=QMessageBox()
+            box.setWindowTitle("提示")
+            box.setText("未选择路径！")
+            box.setIcon(QMessageBox.Warning)
+            box.setStandardButtons(QMessageBox.Ok)
+            box.exec()
+        else:
+            path = self.label_4.text()
+            os.startfile(path)
+class thread_down(QThread):
+    finished = Signal(str)
+    def run(self):
+        print('开始下载')
+        try:
+            self.finished.emit('开始下载')
+            # ui.download()
+        except:
+            pass
+
+if __name__ == "__main__":
+    import sys
+    base_path = os.path.dirname(os.path.abspath(__file__))
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec())
